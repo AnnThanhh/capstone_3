@@ -3,13 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { getMovieDetails } from "../../../apis/movie";
 import { Button, Card, Col, Row, Tabs } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const { TabPane } = Tabs;
 
 export default function DetailMovie() {
   const navigate = useNavigate();
+
+  const [maPhim, setMaPhim] = useState();
+
   const { isLoading, data } = useQuery({
-    queryKey: ["movie-detail"],
+    queryKey: ["movie-detail", maPhim],
     queryFn: () => getMovieDetails(maPhim),
   });
 
