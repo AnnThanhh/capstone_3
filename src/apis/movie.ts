@@ -36,6 +36,33 @@ export const getMovieDetails = async (maPhim: number) => {
   }
 };
 
+export const loginUser = async (user: {
+  taiKhoan: string;
+  matKhau: string;
+}) => {
+  try {
+    const response = await api.post("/QuanLyNguoiDung/DangNhap", user);
+    return response.data.content;
+  } catch (error: any) {
+    throw Error(error);
+  }
+};
+
+export const registerUser = async (user: {
+  taiKhoan: "string",
+  matKhau: "string",
+  email: "string",
+  soDt: "string",
+  maNhom: "string",
+  hoTen: "string"
+}) => {
+  try {
+    const response = await api.post("/QuanLyNguoiDung/DangKy", user);
+    return response.data.content;
+  } catch (error: any) {
+    throw Error(error);
+  }
+};
 
 export const addMovieApi = async (payload: FormData) => {
   try {
