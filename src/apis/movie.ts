@@ -1,5 +1,5 @@
 import { PAGE_SIZE } from "../constants";
-import { Banner, DataMovieListPagination, Movie } from "../types/movie.type";
+import { Banner, CurrentUser, DataMovieListPagination, Movie } from "../types/movie.type";
 import { ResponseApi } from "../types/util";
 import api from "./apiUtil";
 
@@ -41,7 +41,7 @@ export const loginUser = async (user: {
   matKhau: string;
 }) => {
   try {
-    const response = await api.post("/QuanLyNguoiDung/DangNhap", user);
+    const response = await api.post<ResponseApi<CurrentUser>>("/QuanLyNguoiDung/DangNhap", user);
     return response.data.content;
   } catch (error: any) {
     throw Error(error);
@@ -49,12 +49,12 @@ export const loginUser = async (user: {
 };
 
 export const registerUser = async (user: {
-  taiKhoan: "string",
-  matKhau: "string",
-  email: "string",
-  soDt: "string",
-  maNhom: "string",
-  hoTen: "string"
+  taiKhoan: string;
+  hoTen: string;
+  email: string;
+  soDT: string;
+  matKhau: string;
+  maNhom:   string;
 }) => {
   try {
     const response = await api.post("/QuanLyNguoiDung/DangKy", user);

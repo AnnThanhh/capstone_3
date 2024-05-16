@@ -52,3 +52,12 @@ export interface LichChieuPhim {
   thoiLuong: number;
 }
 
+export type CurrentUser = {
+  taiKhoan: string;
+  hoTen: string;
+  email: string;
+  soDT: string;
+  maNhom: string;
+  maLoaiNguoiDung: string;
+  accessToken: string;
+};
