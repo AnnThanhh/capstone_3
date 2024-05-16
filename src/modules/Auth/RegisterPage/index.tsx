@@ -3,7 +3,7 @@ import { Row, Col, Input, Button, Typography, message } from 'antd';
 import { useMutation, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { registerUser } from '../../../apis/movie';
 import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup"
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate } from 'react-router-dom';
 
 const schema = yup.object({
@@ -25,16 +25,15 @@ export default function RegisterPage() {
     criteriaMode: "all",
   });
 
-  const {mutate: handleRegister, isPending} = useMutation({
-    mutationFn: (formValues: FormData) => registerUser(formValues),
+  const { mutate: handleRegister, isPending } = useMutation(registerUser, {
     onSuccess: () => {
       message.success('Tạo tài khoản thành công!');
-      reset(); 
-      navigate("/auth/login")
+      reset();
+      navigate('/auth/login');
     },
     onError: (error) => {
       message.error(`Đã có lỗi xảy ra: ${error.message}`);
-    }
+    },
   });
 
   const onSubmit = (formValues: any) => {
@@ -47,6 +46,7 @@ export default function RegisterPage() {
     formData.append("soDt", formValues.soDt);
     handleRegister(formData);
   };
+  
   return (
     <QueryClientProvider client={queryClient}>
       <div className="w-[400px]">

@@ -1,84 +1,117 @@
+import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
 import { getMovieDetails } from "../../../apis/movie";
-import { Button, Card, Col, Row, Tabs } from "antd";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-
-const { TabPane } = Tabs;
+import { Button } from "antd";
 
 export default function DetailMovie() {
   const navigate = useNavigate();
-
-  const [maPhim, setMaPhim] = useState();
+  const { maPhim } = useParams();
 
   const { isLoading, data } = useQuery({
-    queryKey: ["movie-detail", maPhim],
-    queryFn: () => getMovieDetails(maPhim),
+    queryKey: ["movie-detail", { maPhim }],
+    queryFn: () => getMovieDetails(Number(maPhim)),
   });
 
-  if (isLoading) return <p>Loading</p>;
+  const [activeSystem, setActiveSystem] = useState("");
+
+  useEffect(() => {
+    if (data?.heThongRapChieu?.length) {
+      setActiveSystem(data.heThongRapChieu[0].maHeThongRap);
+    }
+  }, [data]);
+
+  if (isLoading) return <p>Loading...</p>;
 
   const date = new Date(data?.ngayKhoiChieu || "");
   const cinemaSystems = data?.heThongRapChieu || [];
 
   return (
-    <div className="container">
-      <Row gutter={16} justify="center" className="my-5">
-        <Col xs={24} sm={12} md={8} lg={6}>
+    <div className="container mx-auto p-4">
+      <div className="flex flex-col md:flex-row items-center justify-center bg-white shadow-md rounded-lg p-6 mt-10">
+        <div className="md:w-1/3">
           <img
             src={data?.hinhAnh}
-            className="w-100 rounded"
-            style={{ objectFit: "cover" }}
-            height={400}
             alt={data?.tenPhim}
+            className="w-full h-auto rounded-lg shadow-lg"
           />
-        </Col>
-        <Col xs={24} sm={12} md={16} lg={18}>
-          <div className="d-flex flex-column justify-content-between">
-            <div>
-              <h4 className="font-weight-bold">Tên phim: {data?.tenPhim}</h4>
-              <p>Mô tả: {data?.moTa}</p>
-              <p>Đánh giá: {data?.danhGia}</p>
-              <p>Ngày khởi chiếu: {dayjs(date).format("DD/MM/YYYY")}</p>
-            </div>
-            <div style={{ width: 200 }}>
+        </div>
+        <div className="md:w-2/3 md:pl-6 mt-6 md:mt-0">
+          <h1 className="text-3xl font-bold text-gray-800">
+            Tên phim: {data?.tenPhim}
+          </h1>
+          <p className="mt-4 text-gray-600">Mô tả: {data?.moTa}</p>
+          <p className="mt-4 text-gray-600">Đánh giá: {data?.danhGia}</p>
+          <div className="mt-4">
+            <span className="font-semibold text-gray-700">
+              Ngày khởi chiếu: {dayjs(date).format("DD/MM/YYYY")}
+            </span>
+            <div className="mt-2">
               <Button type="primary">Xem trailer</Button>
             </div>
           </div>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
-      <Tabs defaultActiveKey="BHDStar">
-        {cinemaSystems.map((system) => (
-          <TabPane
-            key={system.maHeThongRap}
-            tab={<img src={system.logo} style={{ width: 120, height: 120 }} />}
-          >
-            {system.cumRapChieu.map((item) => (
-              <div key={item.maCumRap}>
-                <h4>{item.tenCumRap}</h4>
-                <Row gutter={16}>
-                  {item.lichChieuPhim.map((lichChieu, index) => (
-                    <Col key={index} span={6}>
-                      <Button
-                        type="primary"
-                        onClick={() =>
-                          navigate(`/booking/${lichChieu.maLichChieu}`)
-                        }
+      <div className="flex flex-col md:flex-row items-center justify-around bg-white shadow-md rounded-lg p-6 mt-10">
+        <div className="flex flex-col">
+          {cinemaSystems.map((system) => (
+            <button
+              key={system.maHeThongRap}
+              className={`rounded-full border-none p-2 m-2 ${
+                activeSystem === system.maHeThongRap
+                  ? "border-b-2 border-blue-500"
+                  : ""
+              }`}
+              onClick={() => setActiveSystem(system.maHeThongRap)}
+            >
+              <img
+                src={system.logo}
+                alt={system.maHeThongRap}
+                className="w-24 h-24"
+              />
+            </button>
+          ))}
+        </div>
+        <div>
+          {cinemaSystems.map(
+            (system) =>
+              system.maHeThongRap === activeSystem &&
+              system.cumRapChieu.map((cumRap) => (
+                <div key={cumRap.maCumRap} className="mt-4">
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    {cumRap.tenCumRap}
+                  </h2>
+                  <p className="mt-2 text-gray-600">{cumRap.diaChi}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    {cumRap.lichChieuPhim.map((lichChieu) => (
+                      <div
+                        key={lichChieu.maLichChieu}
+                        className="bg-white p-4 rounded-lg shadow-md"
                       >
-                        {dayjs(lichChieu.ngayChieuGioChieu).format(
-                          "DD/MM HH:mm"
-                        )}
-                      </Button>
-                    </Col>
-                  ))}
-                </Row>
-              </div>
-            ))}
-          </TabPane>
-        ))}
-      </Tabs>
+                        <p className="text-gray-800">
+                          {dayjs(lichChieu.ngayChieuGioChieu).format("HH:mm")}
+                        </p>
+                        <p className="text-gray-600">
+                          Giá vé: {lichChieu.giaVe.toLocaleString()} VND
+                        </p>
+                        <button
+                          className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                          onClick={() =>
+                            navigate(`/checkout/${lichChieu.maLichChieu}`)
+                          }
+                        >
+                          Đặt vé
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }

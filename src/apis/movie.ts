@@ -36,19 +36,19 @@ export const getMovieDetails = async (maPhim: number) => {
   }
 };
 
-export const loginUser = async (user: {
+export const loginUser = async (userLogin: {
   taiKhoan: string;
   matKhau: string;
 }) => {
   try {
-    const response = await api.post<ResponseApi<CurrentUser>>("/QuanLyNguoiDung/DangNhap", user);
+    const response = await api.post<ResponseApi<CurrentUser>>("/QuanLyNguoiDung/DangNhap", userLogin);
     return response.data.content;
   } catch (error: any) {
     throw Error(error);
   }
 };
 
-export const registerUser = async (user: {
+export const registerUser = async (userRegister: {
   taiKhoan: string;
   hoTen: string;
   email: string;
@@ -57,7 +57,7 @@ export const registerUser = async (user: {
   maNhom:   string;
 }) => {
   try {
-    const response = await api.post("/QuanLyNguoiDung/DangKy", user);
+    const response = await api.post("/QuanLyNguoiDung/DangKy", userRegister);
     return response.data.content;
   } catch (error: any) {
     throw Error(error);
