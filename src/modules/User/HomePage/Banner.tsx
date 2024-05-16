@@ -12,13 +12,14 @@ export default function Banner() {
 
   return (
     <div>
-      <Carousel autoplay arrows infinite={false}>
+      <Carousel autoplay arrows infinite={false} className="w-full">
         {data.map((item) => {
           return (
-            <div key={item.maPhim}>
+            <div key={item.maPhim} className="w-full h-[600px]">
               <img
                 src={item.hinhAnh}
-                className="w-full h-[600px] object-contain"
+                className="w-full h-full object-contain"
+                alt=""
               />
             </div>
           );

@@ -12,6 +12,7 @@ import CinemaManagement from "../modules/Admin/CinemaManagement";
 import AccountSettings from "../modules/Admin/AccountSettings";
 import MovieComponent from "../modules/User/ListMoviePage/Movie";
 import DetailMovie from "../modules/User/MovieDetails";
+import BookingMovie from "../modules/User/MovieDetails/booking";
 
 // const ProtectedRoute = () => {
 //   return <Outlet />;
@@ -43,6 +44,10 @@ const useRouteElement = () => {
           path: "/danh-sach-phim",
           element: <MovieComponent />,
         },
+        {
+          path: "/datve/:maLichChieu",
+          element: <BookingMovie/>,
+        }
       ],
     },
     {

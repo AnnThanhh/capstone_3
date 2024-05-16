@@ -99,7 +99,7 @@ export default function DetailMovie() {
                         <button
                           className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
                           onClick={() =>
-                            navigate(`/checkout/${lichChieu.maLichChieu}`)
+                            navigate(`/datve/${lichChieu.maLichChieu}`)
                           }
                         >
                           Đặt vé

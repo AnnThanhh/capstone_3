@@ -1,5 +1,11 @@
 import { PAGE_SIZE } from "../constants";
-import { Banner, CurrentUser, DataMovieListPagination, Movie } from "../types/movie.type";
+import {
+  Banner,
+  CurrentUser,
+  DanhSachThongTinPhim,
+  DataMovieListPagination,
+  Movie,
+} from "../types/movie.type";
 import { ResponseApi } from "../types/util";
 import api from "./apiUtil";
 
@@ -41,7 +47,10 @@ export const loginUser = async (userLogin: {
   matKhau: string;
 }) => {
   try {
-    const response = await api.post<ResponseApi<CurrentUser>>("/QuanLyNguoiDung/DangNhap", userLogin);
+    const response = await api.post<ResponseApi<CurrentUser>>(
+      "/QuanLyNguoiDung/DangNhap",
+      userLogin
+    );
     return response.data.content;
   } catch (error: any) {
     throw Error(error);
@@ -54,10 +63,21 @@ export const registerUser = async (userRegister: {
   email: string;
   soDT: string;
   matKhau: string;
-  maNhom:   string;
+  maNhom: string;
 }) => {
   try {
     const response = await api.post("/QuanLyNguoiDung/DangKy", userRegister);
+    return response.data.content;
+  } catch (error: any) {
+    throw Error(error);
+  }
+};
+
+export const getListMovieSeat = async (maLichChieu: number) => {
+  try {
+    const response = await api.get<ResponseApi<DanhSachThongTinPhim>>(
+      `/QuanLyDatVe/LayDanhSachPhongVe?MaLichChieu=${maLichChieu}`
+    );
     return response.data.content;
   } catch (error: any) {
     throw Error(error);
