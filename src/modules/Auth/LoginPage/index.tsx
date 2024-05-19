@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Col, Form, Input, Row, Typography, Spin } from "antd";
-import { loginUser } from "../../../apis/movie";
+import { Button, Col, Form, Input, Row, Typography } from "antd";
+import { loginUser } from "../../../apis/user";
 import { useAppDispatch } from "../../../redux/hooks";
 import { setCurrentUser } from "../../../redux/slices/user.slice";
 
@@ -14,27 +13,31 @@ const schema = yup.object({
   matKhau: yup.string().required("Vui lòng nhập mật khẩu"),
 });
 
-export default function LoginPage() {
-  const [formValues, setFormValues] = useState({
-    taiKhoan: "13123",
-    matKhau: "BC42Movie12120088888888",
-  });
+interface FormValues {
+  taiKhoan: string;
+  matKhau: string;
+}
 
+export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { register, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+    defaultValues: {
+      taiKhoan: "",
+      matKhau: "",
+    },
     resolver: yupResolver(schema),
     criteriaMode: "all",
   });
 
   const { mutate: handleLogin, isPending } = useMutation({
-    mutationFn:(payload: any) => loginUser(payload),
+    mutationFn: (payload: FormValues) => loginUser(payload),
     onSuccess: (user) => {
       localStorage.setItem("user", JSON.stringify(user));
       dispatch(setCurrentUser(user));
       if (user.maLoaiNguoiDung === "QuanTri") {
-        navigate("/admin");
+        navigate("/admin/user");
       } else {
         navigate("/");
       }
@@ -44,10 +47,9 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = () => {
+  const onSubmit = (formValues: FormValues) => {
     handleLogin(formValues);
   };
-
 
   return (
     <div className="w-[400px] mx-auto">
@@ -56,10 +58,14 @@ export default function LoginPage() {
         <Typography>Hi, Chào mừng bạn quay lại 👋</Typography>
       </div>
 
-      <Form layout="vertical" onFinish={onSubmit}>
+      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Row gutter={[48, 16]}>
           <Col span={24}>
-            <Form.Item label="*Tài khoản" help={errors.taiKhoan?.message} validateStatus={errors.taiKhoan ? "error" : ""}>
+            <Form.Item 
+              label="*Tài khoản" 
+              help={errors.taiKhoan?.message} 
+              validateStatus={errors.taiKhoan ? "error" : ""}
+            >
               <Input
                 type="text"
                 size="large"
@@ -69,7 +75,11 @@ export default function LoginPage() {
             </Form.Item>
           </Col>
           <Col span={24}>
-            <Form.Item label="*Mật khẩu" help={errors.matKhau?.message} validateStatus={errors.matKhau ? "error" : ""}>
+            <Form.Item 
+              label="*Mật khẩu" 
+              help={errors.matKhau?.message} 
+              validateStatus={errors.matKhau ? "error" : ""}
+            >
               <Input.Password
                 size="large"
                 placeholder="Vui lòng nhập mật khẩu..."
@@ -85,8 +95,9 @@ export default function LoginPage() {
               block
               htmlType="submit"
               disabled={isPending}
+              loading={isPending}
             >
-              {isPending ? <Spin /> : "Đăng nhập"}
+              Đăng nhập
             </Button>
           </Col>
         </Row>

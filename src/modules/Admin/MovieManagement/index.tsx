@@ -24,11 +24,13 @@ import {
   UploadOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import {  useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addMovieApi, getListMovieApi } from "../../../apis/movie";
 import { PAGE_SIZE } from "../../../constants";
+import dayjs from "dayjs";
+import { deleteMovieApi } from "../../../apis/movie";
 
 export default function MovieManagement() {
   const { handleSubmit, control, watch, setValue, reset } = useForm({
@@ -61,13 +63,11 @@ export default function MovieManagement() {
       return addMovieApi(formValues);
     },
     onSuccess: (data) => {
-      // tắt modal
       setIsOpenModal(false);
       queryClient.refetchQueries({
         queryKey: ["list-movie", { currentPage }],
         type: "active",
       });
-      // gọi lại dữ liệu
     },
     onError: (error) => {},
   });
@@ -104,6 +104,11 @@ export default function MovieManagement() {
       title: "Ngày khởi chiếu",
       dataIndex: "ngayKhoiChieu",
       width: 140,
+      render: (ngayKhoiChieu: string) => (
+        <Typography className="w-[120px]">
+          {dayjs(ngayKhoiChieu).format("DD/MM/YYYY")}
+        </Typography>
+      ),
     },
     {
       title: "Đánh giá",
@@ -180,10 +185,23 @@ export default function MovieManagement() {
     },
   ];
 
-  const handleDelete = (record: any) => {
-    console.log("record", record);
-  };
+  const {mutate: handleDelete} = useMutation({
+    mutationFn: (maPhim: number) => {
+      return deleteMovieApi(maPhim);
+    },
+    onSuccess: (data) => {
+      queryClient.refetchQueries({
+        queryKey: ["list-movie", { currentPage }],
+        type: "active",
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
+  const handleDelete = (record: any) => {
+  };
 
   const hinhAnhValue = watch("hinhAnh");
 

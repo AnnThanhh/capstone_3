@@ -42,37 +42,6 @@ export const getMovieDetails = async (maPhim: number) => {
   }
 };
 
-export const loginUser = async (payload: {
-  taiKhoan: string;
-  matKhau: string;
-}) => {
-  try {
-    const response = await api.post<ResponseApi<CurrentUser>>(
-      "/QuanLyNguoiDung/DangNhap",
-      payload
-    );
-    return response.data.content;
-  } catch (error: any) {
-    throw Error(error);
-  }
-};
-
-export const registerUser = async (userRegister: {
-  taiKhoan: string;
-  hoTen: string;
-  email: string;
-  soDT: string;
-  matKhau: string;
-  maNhom: string;
-}) => {
-  try {
-    const response = await api.post("/QuanLyNguoiDung/DangKy", userRegister);
-    return response.data.content;
-  } catch (error: any) {
-    throw Error(error);
-  }
-};
-
 export const getListMovieSeat = async (maLichChieu: number) => {
   try {
     const response = await api.get<ResponseApi<DanhSachThongTinPhim>>(
@@ -103,3 +72,12 @@ export const getListMovieApi = async (currentPage: number) => {
     throw Error(error);
   }
 };
+
+export const deleteMovieApi = async (maPhim: number) => {
+  try {
+    const response = await api.delete(`/QuanLyPhim/XoaPhim?MaPhim=${maPhim}`);
+    return response.data.content;
+  } catch (error: any) {
+    throw Error(error);
+  }
+}
