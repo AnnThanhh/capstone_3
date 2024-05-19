@@ -1,10 +1,10 @@
 import { PAGE_SIZE } from "../constants";
 import {
   Banner,
-  CurrentUser,
   DanhSachThongTinPhim,
   DataMovieListPagination,
   Movie,
+  LichChieu
 } from "../types/movie.type";
 import { ResponseApi } from "../types/util";
 import api from "./apiUtil";
@@ -53,15 +53,6 @@ export const getListMovieSeat = async (maLichChieu: number) => {
   }
 };
 
-export const addMovieApi = async (payload: FormData) => {
-  try {
-    const response = await api.post("/QuanLyPhim/ThemPhimUploadHinh", payload);
-    return response.data.content;
-  } catch (error) {
-    throw "Lỗi rồi";
-  }
-};
-
 export const getListMovieApi = async (currentPage: number) => {
   try {
     const response = await api.get<ResponseApi<DataMovieListPagination>>(
@@ -73,9 +64,37 @@ export const getListMovieApi = async (currentPage: number) => {
   }
 };
 
+export const addMovieApi = async (payload: FormData) => {
+  try {
+    const response = await api.post("/QuanLyPhim/ThemPhimUploadHinh", payload);
+    return response.data.content;
+  } catch (error: any) {
+    throw Error(error);
+  }
+};
+
+
 export const deleteMovieApi = async (maPhim: number) => {
   try {
     const response = await api.delete(`/QuanLyPhim/XoaPhim?MaPhim=${maPhim}`);
+    return response.data.content;
+  } catch (error: any) {
+    throw Error(error);
+  }
+}
+
+export const updateMovieApi = async (payload: FormData) => {
+  try {
+    const response = await api.post("/QuanLyPhim/CapNhatPhimUpload", payload);
+    return response.data.content;
+  } catch (error: any) {
+    throw Error(error);
+  }
+}
+
+export const createScheduleApi = async (payload: FormData) => {
+  try {
+    const response = await api.post<ResponseApi<LichChieu>>("/QuanLyLichChieu/TaoLichChieu", payload);
     return response.data.content;
   } catch (error: any) {
     throw Error(error);

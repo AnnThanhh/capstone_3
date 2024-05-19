@@ -5,7 +5,6 @@ export const registerUser = async (payload: {
   matKhau: string;
 }) => {
   try {
-    // payload: { taiKhoan: "", matKhau:""}
     const response = await api.post("/QuanLyNguoiDung/DangNhap", payload);
     return response.data.content;
   } catch (error: any) {

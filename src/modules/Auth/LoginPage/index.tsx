@@ -22,10 +22,14 @@ export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
     defaultValues: {
-      taiKhoan: "",
-      matKhau: "",
+      taiKhoan: "admin_quyen_luc",
+      matKhau: "159753",
     },
     resolver: yupResolver(schema),
     criteriaMode: "all",
@@ -61,31 +65,19 @@ export default function LoginPage() {
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Row gutter={[48, 16]}>
           <Col span={24}>
-            <Form.Item 
-              label="*Tài khoản" 
-              help={errors.taiKhoan?.message} 
-              validateStatus={errors.taiKhoan ? "error" : ""}
-            >
-              <Input
-                type="text"
-                size="large"
-                placeholder="Vui lòng nhập tài khoản..."
-                {...register("taiKhoan")}
-              />
-            </Form.Item>
+            <Input
+              type="text"
+              size="large"
+              placeholder="Vui lòng nhập tài khoản..."
+              {...register("taiKhoan")}
+            />
           </Col>
           <Col span={24}>
-            <Form.Item 
-              label="*Mật khẩu" 
-              help={errors.matKhau?.message} 
-              validateStatus={errors.matKhau ? "error" : ""}
-            >
-              <Input.Password
-                size="large"
-                placeholder="Vui lòng nhập mật khẩu..."
-                {...register("matKhau")}
-              />
-            </Form.Item>
+            <Input.Password
+              size="large"
+              placeholder="Vui lòng nhập mật khẩu..."
+              {...register("matKhau")}
+            />
           </Col>
 
           <Col span={24}>

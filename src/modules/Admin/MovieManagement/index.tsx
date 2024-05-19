@@ -24,10 +24,14 @@ import {
   UploadOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addMovieApi, getListMovieApi } from "../../../apis/movie";
+import {
+  addMovieApi,
+  getListMovieApi,
+  updateMovieApi,
+} from "../../../apis/movie";
 import { PAGE_SIZE } from "../../../constants";
 import dayjs from "dayjs";
 import { deleteMovieApi } from "../../../apis/movie";
@@ -57,20 +61,6 @@ export default function MovieManagement() {
   });
 
   const queryClient = useQueryClient();
-
-  const { mutate: handleAddMovie, isPending } = useMutation({
-    mutationFn: (formValues: FormData) => {
-      return addMovieApi(formValues);
-    },
-    onSuccess: (data) => {
-      setIsOpenModal(false);
-      queryClient.refetchQueries({
-        queryKey: ["list-movie", { currentPage }],
-        type: "active",
-      });
-    },
-    onError: (error) => {},
-  });
 
   const columns = [
     {
@@ -185,7 +175,7 @@ export default function MovieManagement() {
     },
   ];
 
-  const {mutate: handleDelete} = useMutation({
+  const { mutate: handleDeleteMovie } = useMutation({
     mutationFn: (maPhim: number) => {
       return deleteMovieApi(maPhim);
     },
@@ -195,12 +185,39 @@ export default function MovieManagement() {
         type: "active",
       });
     },
-    onError: (error) => {
-      console.log(error);
+    onError: (error) => {},
+  });
+
+  const { mutate: handleAddMovie, isPending } = useMutation({
+    mutationFn: (formValues: FormData) => {
+      return addMovieApi(formValues);
     },
+    onSuccess: (data) => {
+      setIsOpenModal(false);
+      queryClient.refetchQueries({
+        queryKey: ["list-movie", { currentPage }],
+        type: "active",
+      });
+    },
+    onError: (error) => {},
+  });
+
+  const { mutate: handleUpdateMovie } = useMutation({
+    mutationFn: (formValues: FormData) => {
+      return updateMovieApi(formValues);
+    },
+    onSuccess: (data) => {
+      setIsOpenModal(false);
+      queryClient.refetchQueries({
+        queryKey: ["list-movie", { currentPage }],
+        type: "active",
+      });
+    },
+    onError: (error) => {},
   });
 
   const handleDelete = (record: any) => {
+    handleDeleteMovie(record.maPhim);
   };
 
   const hinhAnhValue = watch("hinhAnh");
@@ -222,6 +239,7 @@ export default function MovieManagement() {
     formData.append("ngayKhoiChieu", formValues.ngayKhoiChieu);
     formData.append("maNhom", "GP01");
     handleAddMovie(formData);
+    handleUpdateMovie(formData);
   };
 
   const dataSource = data?.items || [];
@@ -275,7 +293,7 @@ export default function MovieManagement() {
         </div>
       </div>
       <Modal
-        title="Thêm phim"
+        title={dataEdit ? "Cập nhật phim" : "Thêm phim"}
         centered
         open={isOpenModal}
         onCancel={() => setIsOpenModal(false)}
@@ -451,7 +469,7 @@ export default function MovieManagement() {
                 size="large"
                 type="primary"
               >
-                Thêm phim
+                {dataEdit ? "Cập nhật" : "Thêm"}
               </Button>
             </Col>
           </Row>

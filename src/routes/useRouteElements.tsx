@@ -22,14 +22,12 @@ const ProtectedRoute = () => {
 
 const RejectedRoute = () => {
   const { currentUser } = useAppSelector((state) => state.user);
-  // Nếu chưa đăng nhập (currentUser là nul) thì cho vào trang Login & Register. Ngược lại thì redirect sang home hoặc admin dựa vào maLoaiNguoiDung
   return currentUser === null ? <Outlet /> : <Navigate to={"/"} />;
 };
 
 const ProtectedAdminRoute = () => {
   const { currentUser } = useAppSelector((state) => state.user);
 
-  // Khi có thông tin user, và user đó là QuanTri thì cho đi tiếp. Ngược lại thì đá ra trang login
   return currentUser && currentUser?.maLoaiNguoiDung === "QuanTri" ? (
     <Outlet />
   ) : (

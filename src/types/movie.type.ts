@@ -93,3 +93,10 @@ export interface ThongTinPhim {
   ngayChieu: string;
   gioChieu: string;
 }
+
+export interface LichChieu {
+  maPhim: number;
+  ngayChieuGioChieu: string;
+  maRap: string;
+  giaVe: number;
+}
