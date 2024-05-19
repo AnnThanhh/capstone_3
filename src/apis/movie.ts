@@ -42,14 +42,14 @@ export const getMovieDetails = async (maPhim: number) => {
   }
 };
 
-export const loginUser = async (userLogin: {
+export const loginUser = async (payload: {
   taiKhoan: string;
   matKhau: string;
 }) => {
   try {
     const response = await api.post<ResponseApi<CurrentUser>>(
       "/QuanLyNguoiDung/DangNhap",
-      userLogin
+      payload
     );
     return response.data.content;
   } catch (error: any) {

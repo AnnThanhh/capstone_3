@@ -29,12 +29,12 @@ export default function LoginPage() {
   });
 
   const { mutate: handleLogin, isPending } = useMutation({
-    mutationFn: loginUser,
+    mutationFn:(payload: any) => loginUser(payload),
     onSuccess: (user) => {
       localStorage.setItem("user", JSON.stringify(user));
       dispatch(setCurrentUser(user));
       if (user.maLoaiNguoiDung === "QuanTri") {
-        navigate("/admin/user");
+        navigate("/admin");
       } else {
         navigate("/");
       }
