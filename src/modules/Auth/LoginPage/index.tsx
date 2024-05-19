@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -5,6 +6,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Col, Form, Input, Row, Typography, Spin } from "antd";
 import { loginUser } from "../../../apis/movie";
+import { useAppDispatch } from "../../../redux/hooks";
+import { setCurrentUser } from "../../../redux/slices/user.slice";
 
 const schema = yup.object({
   taiKhoan: yup.string().required("Vui lòng nhập tài khoản"),
@@ -12,67 +15,67 @@ const schema = yup.object({
 });
 
 export default function LoginPage() {
+  const [formValues, setFormValues] = useState({
+    taiKhoan: "13123",
+    matKhau: "BC42Movie12120088888888",
+  });
+
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { register, handleSubmit, formState } = useForm<any>({
-    defaultValues: { taiKhoan: "", matKhau: "" },
+
+  const { register, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
     criteriaMode: "all",
   });
 
-  const { mutate: handleLogin, isPending } = useMutation(loginUser, {
-    onSuccess: (data) => {
-      localStorage.setItem("user", JSON.stringify(data));
-      if (data.maLoaiNguoiDung === "QuanTri") {
-        navigate("/admin");
+  const { mutate: handleLogin, isPending } = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (user) => {
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch(setCurrentUser(user));
+      if (user.maLoaiNguoiDung === "QuanTri") {
+        navigate("/admin/user");
       } else {
         navigate("/");
       }
     },
+    onError: (error) => {
+      console.log("onError", error);
+    },
   });
 
-  const onSubmit = async (formData: any) => {
-    try {
-      await handleLogin(formData);
-    } catch (error) {
-      // Xử lý lỗi từ server
-      console.error("Đăng nhập thất bại:", error);
-      // Hiển thị thông báo lỗi từ giao diện
-    }
+  const onSubmit = () => {
+    handleLogin(formValues);
   };
+
 
   return (
     <div className="w-[400px] mx-auto">
       <div className="my-4 text-center">
-        <Typography className="font-bold text-3xl">Đăng nhập</Typography>
-        <Typography className="mt-2">Hi, Chào mừng bạn quay lại 👋</Typography>
+        <Typography.Title level={3}>Đăng nhập</Typography.Title>
+        <Typography>Hi, Chào mừng bạn quay lại 👋</Typography>
       </div>
 
-      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
+      <Form layout="vertical" onFinish={onSubmit}>
         <Row gutter={[48, 16]}>
           <Col span={24}>
-            <label className="text-xs text-[#6A7280]">*Tài khoản</label>
-            <Input
-              type="text"
-              size="large"
-              className="mt-1"
-              placeholder="Vui lòng nhập tài khoản..."
-              {...register("taiKhoan")}
-            />
-            {formState.errors.taiKhoan && (
-              <small className="text-danger">{formState.errors.taiKhoan.message}</small>
-            )}
+            <Form.Item label="*Tài khoản" help={errors.taiKhoan?.message} validateStatus={errors.taiKhoan ? "error" : ""}>
+              <Input
+                type="text"
+                size="large"
+                placeholder="Vui lòng nhập tài khoản..."
+                {...register("taiKhoan")}
+              />
+            </Form.Item>
           </Col>
           <Col span={24}>
-            <label className="text-xs text-[#6A7280]">*Mật khẩu</label>
-            <Input.Password
-              size="large"
-              className="mt-1"
-              placeholder="Vui lòng nhập mật khẩu..."
-              {...register("matKhau")}
-            />
-            {formState.errors.matKhau && (
-              <small className="text-danger">{formState.errors.matKhau.message}</small>
-            )}
+            <Form.Item label="*Mật khẩu" help={errors.matKhau?.message} validateStatus={errors.matKhau ? "error" : ""}>
+              <Input.Password
+                size="large"
+                placeholder="Vui lòng nhập mật khẩu..."
+                {...register("matKhau")}
+              />
+            </Form.Item>
           </Col>
 
           <Col span={24}>
@@ -82,7 +85,6 @@ export default function LoginPage() {
               block
               htmlType="submit"
               disabled={isPending}
-              loading={isPending}
             >
               {isPending ? <Spin /> : "Đăng nhập"}
             </Button>
